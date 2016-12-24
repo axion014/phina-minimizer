@@ -2,6 +2,8 @@
 * gulpfile.js
 */
 
+var fs = require("fs");
+
 var gulp = require('gulp');
 var util = require('gulp-util');
 var header = require('gulp-header')
@@ -9,7 +11,6 @@ var ghelper = require('gulp-helper');
 ghelper.require();
 
 var pkg = require('./package.json');
-var using = require('./using.json');
 var dependences = require('./dependencies.json');
 var ip = require('ip');
 
@@ -41,7 +42,7 @@ gulp.task('concat', function() {
 			dependences[f] && recurser(dependences[f]);
 	  });
 	}
-	recurser(using.files);
+	recurser(fs.readFileSync('./using.txt').toString().split('\n'));
 
   return gulp.src(scripts)
     .pipe(require('gulp-concat')('phina.js'))

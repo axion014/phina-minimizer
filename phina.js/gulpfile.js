@@ -26,8 +26,6 @@ var banner = [
   "",
 ].join('\n');
 
-
-
 gulp.task('default', ['uglify']);
 gulp.task('dev', ['watch', 'webserver']);
 
@@ -39,7 +37,7 @@ gulp.task('concat', function() {
   return gulp.src(scripts)
     .pipe(concat('phina.js'))
     .pipe(replace('<%= version %>', pkg.version))
-    .pipe(header(banner, {
+		.pipe(header(banner, {
       pkg: pkg,
     }))
     .pipe(gulp.dest('./build/'))
@@ -51,7 +49,7 @@ gulp.task('uglify', ['concat'], function() {
     .pipe(uglify({
       banner: '/* hoge */'
     }))
-    .pipe(header(banner, {
+		.pipe(header(banner, {
       pkg: pkg,
     }))
     .pipe(rename({
@@ -88,4 +86,3 @@ gulp.task('download', function() {
   download('http://tmlife.net')
     .pipe(gulp.dest('downloads/'));
 });
-

@@ -10,12 +10,12 @@ var header = require('gulp-header')
 var ghelper = require('gulp-helper');
 ghelper.require();
 
+var ppkg = require('./phina.js/package.json');
 var pkg = require('./package.json');
 var dependences = require('./dependencies.json');
 var ip = require('ip');
 
-var banner = [
-  "/* ",
+var pbanner = [
   " * <%= pkg.name %> <%= pkg.version %>",
   " * <%= pkg.description %>",
   " * MIT Licensed",
@@ -29,7 +29,12 @@ var banner = [
   "",
 ].join('\n');
 
-
+var banner = [
+  "/*",
+  " * <%= pkg.name %> <%= pkg.version %> used ",
+  " *",
+	""
+].join('\n');
 
 gulp.task('default', ['uglify']);
 gulp.task('dev', ['watch', 'webserver']);
@@ -45,23 +50,19 @@ gulp.task('concat', function() {
 	recurser(fs.readFileSync('./using.txt').toString().split('\n'));
 
   return gulp.src(scripts)
-    .pipe(require('gulp-concat')('phina.js'))
+    .pipe(require('gulp-concat')('phina.core.js'))
     .pipe(require('gulp-replace')('<%= version %>', pkg.version))
-    .pipe(header(banner, {pkg: pkg}))
+		.pipe(header(pbanner, {pkg: ppkg}))
+		.pipe(header(banner, {pkg: pkg}))
     .pipe(gulp.dest('./phina.js/build/'));
 });
 
 gulp.task('uglify', ['concat'], function() {
-  return gulp.src('./phina.js/build/phina.js')
-    .pipe(require('gulp-uglify')({
-      banner: '/* hoge */'
-    }))
-    .pipe(header(banner, {
-      pkg: pkg,
-    }))
-    .pipe(require('gulp-rename')({
-      extname: '.min.js'
-    }))
+  return gulp.src('./phina.js/build/phina.core.js')
+    .pipe(require('gulp-uglify')({banner: '/* hoge */'}))
+		.pipe(header(pbanner, {pkg: ppkg}))
+		.pipe(header(banner, {pkg: pkg}))
+    .pipe(require('gulp-rename')({extname: '.min.js'}))
     .pipe(gulp.dest('./phina.js/build/'))
     .on('end', function() {
       util.log(util.colors.blue('finish'));

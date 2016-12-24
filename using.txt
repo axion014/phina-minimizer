@@ -1,9 +1,33 @@
 
-core/object.js
-core/number.js
-core/string.js
-core/array.js
-core/date.js
-core/math.js
+core.object
+core.number
+core.string
+core.array
+core.date
+core.math
+phina
+dom.event
 
-phina.js
+// これより上を書き換えないでください。
+
+asset.asset
+asset.assetloader
+asset.assetmanager
+asset.file
+
+app.element
+
+accessory.tweener
+
+display.displayelement
+display.displayscene
+display.canvaslayer // ThreeLayer
+display.shape // CircleShape, RectangleShapeを含む
+display.label
+display.canvasapp
+
+ui.gauge
+
+game.managerscene
+game.loadingscene
+game.splashscene

@@ -1,3 +1,5 @@
-bower_components
 node_modules
-docs
+phina.js/node_modules
+phina.js/docs
+phina.js/build/phina.core.js
+phina.js/build/phina.core.min.js

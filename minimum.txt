@@ -1,9 +1,11 @@
 
-core/object.js
-core/number.js
-core/string.js
-core/array.js
-core/date.js
-core/math.js
+core.object
+core.number
+core.string
+core.array
+core.date
+core.math
+phina
+dom.event
 
-phina.js
+// これより上を書き換えないでください。

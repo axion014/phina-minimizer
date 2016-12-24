@@ -36,18 +36,26 @@ var banner = [
 	""
 ].join('\n');
 
+var showall = false;
+
+gulp.task('showall', ['ishowall', 'default']);
+gulp.task('ishowall', function() {showall = true;});
 gulp.task('default', ['uglify']);
 gulp.task('dev', ['watch', 'webserver']);
 
 gulp.task('concat', function() {
   var scripts = [];
-	var recurser = function(d) {
+	var recurser = function(d, n) {
 		d.forEach(function(f) {
+			if (scripts.indexOf('./phina.js/src/' + f) < 0 && showall) {
+				util.log(util.colors.cyan(' '.repeat(n) + f))
+			} else if (scripts.indexOf('./phina.js/src/' + f) < 0 || showall) util.log(' '.repeat(n) + f);
+			dependences[f] && recurser(dependences[f], n + 1);
 	    scripts.indexOf('./phina.js/src/' + f) < 0 && scripts.push('./phina.js/src/' + f);
-			dependences[f] && recurser(dependences[f]);
 	  });
 	}
-	recurser(fs.readFileSync('./using.txt').toString().split('\n'));
+	recurser(fs.readFileSync('./using.txt').toString().split('\n').map(v => v.substring(0, v.indexOf('//') < 0 ? v.length : v.indexOf('//')))
+		.map(v => v.replace(/ +$/, '')).filter(v => !!v).map(v => v.replace('.', '/')).map(v => v + '.js'), 0);
 
   return gulp.src(scripts)
     .pipe(require('gulp-concat')('phina.core.js'))

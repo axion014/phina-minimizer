@@ -1,10 +1,9 @@
 {
   "name": "phina-minimizer",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "This project wraps raw phina.js repository, and make to can build it from outer. You can include or exclude any class, and you can any custom, and minimize. Dependencies are considered.",
+  "main": "phina.js/build/phina.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "axion014",
   "license": "ISC",

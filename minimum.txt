@@ -1,11 +1,12 @@
 
 core.object
-core.number
-core.string
-core.array
-core.date
-core.math
+core.*
 phina
 dom.event
 
 // これより上を書き換えないでください。
+
+// 文法
+// "hoge.fuga" とすることでphina.js/src/hoge/fuga.jsとそれが依存するファイルが読み込まれる
+// "hoge.*" とすることでphina.js/src/hoge下の全てのファイルとそれが依存するファイルが読み込まれる
+// "-hoge.fuga" とすることで依存関係によって読み込まれたファイルを取り消せる

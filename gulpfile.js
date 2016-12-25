@@ -12,7 +12,7 @@ ghelper.require();
 
 var ppkg = require('./phina.js/package.json');
 var pkg = require('./package.json');
-var dependences = require('./dependencies.json');
+var dependencies = require('./dependencies.json');
 var ip = require('ip');
 
 var pbanner = [
@@ -45,17 +45,37 @@ gulp.task('dev', ['watch', 'webserver']);
 
 gulp.task('concat', function() {
   var scripts = [];
+	var notFounds = []
 	var recurser = function(d, n) {
 		d.forEach(function(f) {
-			if (scripts.indexOf('./phina.js/src/' + f) < 0 && showall) {
-				util.log(util.colors.cyan(' '.repeat(n) + f))
-			} else if (scripts.indexOf('./phina.js/src/' + f) < 0 || showall) util.log(' '.repeat(n) + f);
-			dependences[f] && recurser(dependences[f], n + 1);
-	    scripts.indexOf('./phina.js/src/' + f) < 0 && scripts.push('./phina.js/src/' + f);
+			var erase = f.startsWith('-');
+			var isdependensed = dependencies[f] && !f.endsWith('(-d)') && !erase;
+			f = f.replace(/\(-d\)$/, '').replace(/^-/, '');
+			var exists = fs.statSync('./phina.js/src/' + f).isFile();
+			if (((scripts.indexOf('./phina.js/src/' + f) < 0 && erase) || (!erase && !exists)) && !notFounds.indexOf(f) < 0) {
+				notFounds.push(f);
+				util.log(util.colors.red(' '.repeat(n) + f + ' not found'));
+			} else if (scripts.indexOf('./phina.js/src/' + f) < 0 && showall) util.log(util.colors.cyan(' '.repeat(n) + f));
+			else if (scripts.indexOf('./phina.js/src/' + f) < 0 || showall) util.log(' '.repeat(n) + f);
+			isdependensed && exists && recurser(dependencies[f], n + 1);
+	    erase ? (() => {
+				util.log(util.colors.red('-' + f));
+		    var index  = scripts.indexOf('./phina.js/src/' + f);
+		    if (index >= 0) scripts.splice(index, 1);
+		  })() : scripts.indexOf('./phina.js/src/' + f) < 0 && exists && scripts.push('./phina.js/src/' + f);
 	  });
 	}
-	recurser(fs.readFileSync('./using.txt').toString().split('\n').map(v => v.substring(0, v.indexOf('//') < 0 ? v.length : v.indexOf('//')))
-		.map(v => v.replace(/ +$/, '')).filter(v => !!v).map(v => v.replace('.', '/')).map(v => v + '.js'), 0);
+	var flat = function (previousValue, currentValue) {
+		return Array.isArray(currentValue) ? previousValue.concat(currentValue.reduce(flat, [])) : previousValue.concat(currentValue);
+	}
+	recurser(fs.readFileSync('./using.txt').toString().split('\n').map(v => v.substring(0, v.includes('//') ? v.indexOf('//') : v.length))
+		.map(v => v.replace(/ +$/, '')).filter(v => !!v).map(v => v.replace('.', '/')).map(v => v + '.js').map(v => v.includes('*') ? (() => {
+			var arr = [];
+			fs.readdirSync('./phina.js/src/' + v.replace('*.js', '')).filter(function(file){
+				return fs.statSync('./phina.js/src/' + v.replace('*.js', '') + file).isFile(); //絞り込み
+			}).forEach(function (file) {arr.push(v.replace('*.js', file));});
+			return arr;
+		})() : v).reduce(flat, []), 0);
 
   return gulp.src(scripts)
     .pipe(require('gulp-concat')('phina.core.js'))

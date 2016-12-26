@@ -4,9 +4,9 @@ core.*
 phina
 dom.event
 
--core.date
-
 // これより上を書き換えないでください。
+
+-core.date
 
 asset.asset
 asset.assetloader
